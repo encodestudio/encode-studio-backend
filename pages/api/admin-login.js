@@ -41,6 +41,9 @@ export default async function handler(req, res) {
         // 🔍 Optional Debug (remove after testing)
         // console.log("INPUT:", inputEmail, inputPassword);
         // console.log("ENV:", adminEmail, adminPassword);
+        console.log("ENV EMAIL:", process.env.ADMIN_EMAIL);
+        console.log("ENV PASSWORD:", process.env.ADMIN_PASSWORD);
+        console.log("BODY:", req.body);
 
         // ✅ Credential Check
         if (inputEmail === adminEmail && inputPassword === adminPassword) {
