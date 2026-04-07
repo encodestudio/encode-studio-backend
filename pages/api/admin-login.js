@@ -19,18 +19,33 @@ export default async function handler(req, res) {
     try {
         await runMiddleware(req, res, cors);
 
+        // ✅ Allow only POST
         if (req.method !== "POST") {
             return res.status(405).json({ message: "Method not allowed" });
         }
 
-        const { email, password } = req.body;
+        const { email, password } = req.body || {};
 
-        if (
-            email.trim() === process.env.ADMIN_EMAIL &&
-            password.trim() === process.env.ADMIN_PASSWORD
-        ) {
+        // ✅ Validate input
+        if (!email || !password) {
+            return res.status(400).json({ message: "Email and password required" });
+        }
+
+        // ✅ Normalize values (VERY IMPORTANT)
+        const inputEmail = email.trim().toLowerCase();
+        const inputPassword = password.trim();
+
+        const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+        const adminPassword = process.env.ADMIN_PASSWORD?.trim();
+
+        // 🔍 Optional Debug (remove after testing)
+        // console.log("INPUT:", inputEmail, inputPassword);
+        // console.log("ENV:", adminEmail, adminPassword);
+
+        // ✅ Credential Check
+        if (inputEmail === adminEmail && inputPassword === adminPassword) {
             const token = jwt.sign(
-                { email },
+                { email: inputEmail },
                 process.env.JWT_SECRET,
                 { expiresIn: "1d" }
             );
